@@ -6,13 +6,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.location.Location;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class MainActivity extends AppCompatActivity
@@ -54,7 +60,7 @@ public class MainActivity extends AppCompatActivity
         super.onStart();
 
         // Check if we have permission to access high accuracy fine location.
-        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        int permission = ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION);
 
         // if permission is granted, fetch the last location.
         if ( permission == PERMISSION_GRANTED)
@@ -63,7 +69,7 @@ public class MainActivity extends AppCompatActivity
         } else
         {
             // If permission has not been granted, request permission.
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST);
         }
     }
@@ -84,5 +90,30 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void getLastLocation(){}
+    // Now update the getLastLocation stub. Get a reference to the Fused Location Provider and
+    //use the getLastLocation method to find the last known location. Create a method stub
+    //updateTextView that will take the returned Location and update the Text View. It’s worth
+    //noting that the Location Service is capable of detecting and resolving multiple potential issues
+    //with the Google Play services APK, so we don’t need to handle the connection or failure cases
+    //within our code:
+    private void getLastLocation()
+    {
+        FusedLocationProviderClient fusedLocationProviderClient;
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED ||
+        ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED)
+        {
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>()
+            {
+                @Override
+                public void onSuccess(Location location) {
+                    updateTextView(location);
+                }
+            });
+        }
+    }
+
+    private void updateTextView(Location location) {
+    }
 }
