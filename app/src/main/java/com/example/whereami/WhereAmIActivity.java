@@ -14,7 +14,9 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -56,6 +58,17 @@ public class WhereAmIActivity extends AppCompatActivity
                 .setInterval(5000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
+
+    LocationCallback mLocationCallback = new LocationCallback() {
+        public void onLocationResult(LocationResult locationResult)
+        {
+            Location location = locationResult.getLastLocation();
+            if (location !=null)
+            {
+                updateTextView(location);
+            }
+        }
+    };
 
     // We’ll update the current location each time the app becomes visible, so we override the onStart
     //method to check for runtime permission to access fine location accuracy. Add the stub
