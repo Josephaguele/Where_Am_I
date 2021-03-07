@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -21,12 +22,14 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-public class MainActivity extends AppCompatActivity
+public class WhereAmIActivity extends AppCompatActivity
 {
 
     private static final String ERROR_MSG = "Google Play services are unavailable.";
     private TextView mTextView;
 
+    // code to update currentLocation by listening for changes
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,6 +49,12 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(this,ERROR_MSG, Toast.LENGTH_LONG).show();
             }
         }
+
+        // We update the onCreate method to create a new LocationRequest that prioritizes high accuracy
+        // and has a 5-second update interval:
+        mLocationRequest = new LocationRequest()
+                .setInterval(5000)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     // We’ll update the current location each time the app becomes visible, so we override the onStart
@@ -81,7 +90,8 @@ public class MainActivity extends AppCompatActivity
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if(requestCode == LOCATION_PERMISSION_REQUEST)
-        {
+        { // this means if the request is not granted on the first click by the user, the toast will
+            // be location permission is denied.
             if (grantResults[0] != PERMISSION_GRANTED)
                 Toast.makeText(this, "Location Permission Denied",
                         Toast.LENGTH_LONG).show();
@@ -114,6 +124,15 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // We finally update the updateTextView method stub to extract the longitude and latitude from each
+    // location and display it in the TextView:
     private void updateTextView(Location location) {
+        String latLongString = "No location found";
+        if (location != null) {
+            double lat = location.getLatitude();
+            double lng = location.getLongitude();
+            latLongString = "Lat:" + lat + "\nLong:" + lng;
+        }
+        mTextView.setText(latLongString);
     }
 }
