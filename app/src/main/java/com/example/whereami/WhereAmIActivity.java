@@ -59,6 +59,8 @@ public class WhereAmIActivity extends AppCompatActivity
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    // we create a new LocationCallback that calls the updateTextView method to update the TextView
+    // whenever a new Location update is received.
     LocationCallback mLocationCallback = new LocationCallback() {
         public void onLocationResult(LocationResult locationResult)
         {
